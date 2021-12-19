@@ -86,16 +86,6 @@ require('packer').startup(function()
     end,
   })
 
-  -- use({
-  --   'lewis6991/spellsitter.nvim',
-  --   config = function()
-  --     require('spellsitter').setup({
-  --       enable = true,
-  --       spellchecker = 'ffi',
-  --     })
-  --   end,
-  -- })
-
   use('neovim/nvim-lspconfig')
 
   use({
@@ -194,7 +184,12 @@ require('packer').startup(function()
     requires = {
       'nvim-lua/plenary.nvim',
     },
-    config = require('config/gitsigns'),
+    config = require('config.gitsigns'),
+  })
+
+  use({
+    'folke/lua-dev.nvim',
+    config = require('config.lua-dev'),
   })
 end)
 
