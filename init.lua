@@ -55,16 +55,7 @@ require('packer').startup(function()
     run = function()
       vim.api.nvim_command('TSUpdate')
     end,
-    config = function()
-      require('nvim-treesitter.configs').setup({
-        ensure_installed = 'maintained',
-        sync_install = false,
-        highlight = {
-          enable = true,
-          additional_vim_regex_highlighting = false,
-        },
-      })
-    end,
+    config = require('config.nvim-treesitter'),
   })
 
   use({
@@ -74,7 +65,7 @@ require('packer').startup(function()
     end,
   })
 
-  use('junegunn/rainbow_parentheses.vim')
+  -- use('junegunn/rainbow_parentheses.vim')
 
   use('yamatsum/nvim-cursorline')
 
@@ -86,7 +77,7 @@ require('packer').startup(function()
     end,
   })
 
-  use({ 'neovim/nvim-lspconfig', config = require('config.lspconfig') })
+  use({ 'neovim/nvim-lspconfig', config = require('config.nvim-lspconfig') })
 
   use({
     'nvim-telescope/telescope.nvim',
@@ -100,24 +91,7 @@ require('packer').startup(function()
 
   use({
     'hrsh7th/nvim-cmp',
-    config = function()
-      local cmp = require('cmp')
-
-      cmp.setup({
-        snippet = {
-          expand = function(args)
-            require('luasnip').lsp_expand(args.body)
-          end,
-        },
-        sources = {
-          { name = 'luasnip' },
-          { name = 'nvim_lsp' },
-        },
-        mapping = {
-          ['<CR>'] = cmp.mapping.confirm({ select = true }),
-        },
-      })
-    end,
+    config = require('config.nvim-cmp'),
   })
 
   use({ 'hrsh7th/cmp-nvim-lsp', config = require('config.cmp-nvim-lsp') })
