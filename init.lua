@@ -86,7 +86,7 @@ require('packer').startup(function()
     end,
   })
 
-  use('neovim/nvim-lspconfig')
+  use({ 'neovim/nvim-lspconfig', config = require('config.lspconfig') })
 
   use({
     'nvim-telescope/telescope.nvim',
@@ -120,7 +120,8 @@ require('packer').startup(function()
     end,
   })
 
-  use('hrsh7th/cmp-nvim-lsp')
+  use({ 'hrsh7th/cmp-nvim-lsp', config = require('config.cmp-nvim-lsp') })
+
   use('saadparwaiz1/cmp_luasnip')
 
   use({
@@ -192,23 +193,3 @@ require('packer').startup(function()
     config = require('config.lua-dev'),
   })
 end)
-
-require('lspconfig').tsserver.setup({})
-require('lspconfig').eslint.setup({})
-require('lspconfig').solargraph.setup({})
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
-
-require('lspconfig').tsserver.setup({
-  capabilities = capabilities,
-})
-
-require('lspconfig').eslint.setup({
-  capabilities = capabilities,
-})
-
-require('lspconfig').solargraph.setup({
-  capabilities = capabilities,
-})
