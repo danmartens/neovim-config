@@ -10,6 +10,7 @@ return function()
     sources = {
       { name = 'luasnip' },
       { name = 'nvim_lsp' },
+      { name = 'path' },
     },
     mapping = {
       ['<CR>'] = cmp.mapping.confirm({ select = true }),

@@ -1,9 +1,39 @@
-vim.g.neon_style = 'dark'
+local keymap = require('keymap')
+
+keymap.n('<c-p>', ':Telescope find_files<cr>')
+
+keymap.n('K', '<cmd>lua vim.lsp.buf.hover()<cr>')
+
+keymap.n('<c-h>', '<c-w>h')
+keymap.n('<c-j>', '<c-w>j')
+keymap.n('<c-k>', '<c-w>k')
+keymap.n('<c-l>', '<c-w>l')
+
+keymap.n('<c-q>', ':q<cr>')
+
+-- Save
+keymap.n('<c-s>', '<cmd>w<cr>')
+keymap.i('<c-s>', '<esc><cmd>w<cr>')
+
+-- Undo
+keymap.n('<c-z>', 'u')
+keymap.i('<c-z>', '<esc>u')
+
+-- Reselect text after indent / dedent
+keymap.v('>', '>gv')
+keymap.v('<', '<gv')
+
+keymap.n('<leader>pi', '<cmd>PackerInstall<cr>')
+keymap.n('<leader>pu', '<cmd>PackerUpdate<cr>')
+keymap.n('<leader>ps', '<cmd>PackerSync<cr>')
 
 vim.cmd([[
-  colorscheme tokyonight
-
   set encoding=utf-8
+
+  set timeoutlen=1000 ttimeoutlen=0
+
+  set title
+  set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
 
   set mouse=a
 
@@ -19,36 +49,31 @@ vim.cmd([[
     set termguicolors
   endif
 
-  vnoremap > >gv
-  vnoremap < <gv
-
-  nnoremap <leader>pi :PackerInstall<cr>
-  nnoremap <leader>ps :PackerSync<cr>
-
+  nnoremap <leader>ce :e ~/.config/nvim/init.lua<cr>
   nnoremap <leader>cs :so ~/.config/nvim/init.lua<cr>
-
-  nnoremap <leader>ff <cmd>Telescope find_files<cr>
-  nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-  nnoremap <leader>fb <cmd>Telescope buffers<cr>
-  nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-  nnoremap <leader>fs <cmd>Telescope lsp_dynamic_workspace_symbols<cr>
-  nnoremap <leader>fd <cmd>Telescope lsp_definitions<cr>
-  nnoremap <leader>fr <cmd>Telescope lsp_references<cr>
-
-  nnoremap <silent><c-]> :BufferLineCycleNext<cr>
-  nnoremap <silent><c-[> :BufferLineCyclePrev<cr>
 
   augroup highlight_yank
     autocmd!
     au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
   augroup END
+
+  augroup post_write
+    autocmd!
+    au BufWritePost * silent! lua vim.notify("\"" .. vim.fn.expand("%:t") .. "\" saved", "info", { timeout = 250 })
+  augroup END
+
+  augroup post_write_config
+    autocmd!
+    au BufWritePost init.lua silent! lua vim.notify("testing")
+  augroup END
+
+  set guifont=FiraCode\ Nerd\ Font:h16
 ]])
 
 require('packer').startup(function()
   use('wbthomason/packer.nvim')
 
   use('tpope/vim-sensible')
-  use('tpope/vim-commentary')
 
   use({
     'nvim-treesitter/nvim-treesitter',
@@ -59,13 +84,24 @@ require('packer').startup(function()
   })
 
   use({
-    'glepnir/indent-guides.nvim',
+    'windwp/nvim-autopairs',
     config = function()
-      require('indent_guides').setup({})
+      require('nvim-autopairs').setup({})
     end,
   })
 
-  -- use('junegunn/rainbow_parentheses.vim')
+  use({ 'p00f/nvim-ts-rainbow' })
+
+  use({
+    'lukas-reineke/indent-blankline.nvim',
+    config = function()
+      require('indent_blankline').setup({
+        char = '┊',
+        show_current_context = true,
+        show_current_context_start = true,
+      })
+    end,
+  })
 
   use('yamatsum/nvim-cursorline')
 
@@ -82,12 +118,12 @@ require('packer').startup(function()
   use({
     'nvim-telescope/telescope.nvim',
     requires = { 'nvim-lua/plenary.nvim', 'kyazdani42/nvim-web-devicons' },
+    config = require('config.telescope'),
   })
 
-  use('tpope/vim-endwise')
-  use('rstacruz/vim-closer')
-
   use('L3MON4D3/LuaSnip')
+
+  use('hrsh7th/cmp-path')
 
   use({
     'hrsh7th/nvim-cmp',
@@ -101,19 +137,19 @@ require('packer').startup(function()
   use({
     'norcalli/nvim-colorizer.lua',
     config = function()
-      require('colorizer').setup()
-    end,
-  })
-
-  use({
-    'folke/twilight.nvim',
-    config = function()
-      require('twilight').setup({})
+      require('colorizer').setup({})
     end,
   })
 
   use('folke/tokyonight.nvim')
-  use('rafamadriz/neon')
+
+  use({
+    'rose-pine/neovim',
+    as = 'rose-pine',
+    config = function()
+      vim.cmd('colorscheme rose-pine')
+    end,
+  })
 
   use({
     'folke/which-key.nvim',
@@ -125,33 +161,36 @@ require('packer').startup(function()
   })
 
   use({
+    'folke/lsp-colors.nvim',
+    config = function()
+      require('lsp-colors').setup({})
+    end,
+  })
+
+  use({
     'sbdchd/neoformat',
     config = function()
       vim.cmd([[
         augroup fmt
           autocmd!
-          autocmd BufWritePre * undojoin | Neoformat
+          autocmd BufWritePre * try | undojoin | Neoformat | catch /E790/ | finally | silent Neoformat | endtry
         augroup END
       ]])
     end,
   })
 
   use({
-    'akinsho/bufferline.nvim',
+    'folke/trouble.nvim',
     requires = 'kyazdani42/nvim-web-devicons',
     config = function()
-      require('bufferline').setup({
-        diagnostics = 'nvim_lsp',
-      })
+      require('trouble').setup({})
     end,
   })
 
   use({
     'phaazon/hop.nvim',
     branch = 'v1',
-    config = function()
-      require('hop').setup({})
-    end,
+    config = require('config.hop'),
   })
 
   use({
@@ -166,4 +205,20 @@ require('packer').startup(function()
     'folke/lua-dev.nvim',
     config = require('config.lua-dev'),
   })
+
+  use({
+    'vim-test/vim-test',
+    config = function()
+      vim.cmd('let test#strategy = "neovim"')
+    end,
+  })
+
+  use({
+    'rcarriga/nvim-notify',
+    config = function()
+      vim.notify = require('notify')
+    end,
+  })
+
+  use('tpope/vim-commentary')
 end)
