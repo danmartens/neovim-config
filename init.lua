@@ -23,9 +23,13 @@ keymap.i('<c-z>', '<esc>u')
 keymap.v('>', '>gv')
 keymap.v('<', '<gv')
 
+-- Packer
+
 keymap.n('<leader>pi', '<cmd>PackerInstall<cr>')
 keymap.n('<leader>pu', '<cmd>PackerUpdate<cr>')
 keymap.n('<leader>ps', '<cmd>PackerSync<cr>')
+
+keymap.n('<leader>ce', '<cmd>e ~/.config/nvim/init.lua<cr>')
 
 vim.cmd([[
   set encoding=utf-8
@@ -49,9 +53,6 @@ vim.cmd([[
     set termguicolors
   endif
 
-  nnoremap <leader>ce :e ~/.config/nvim/init.lua<cr>
-  nnoremap <leader>cs :so ~/.config/nvim/init.lua<cr>
-
   augroup highlight_yank
     autocmd!
     au TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=200 }
@@ -64,7 +65,7 @@ vim.cmd([[
 
   augroup post_write_config
     autocmd!
-    au BufWritePost init.lua silent! lua vim.notify("testing")
+    au BufWritePost init.lua silent! try | source ~/.config/nvim/init.lua | catch | lua vim.notify("Failed to source configuration!", "error") | endtry
   augroup END
 
   set guifont=FiraCode\ Nerd\ Font:h16
@@ -222,3 +223,5 @@ require('packer').startup(function()
 
   use('tpope/vim-commentary')
 end)
+
+vim.notify('Configuration sourced!', 'info', { timeout = 250 })
