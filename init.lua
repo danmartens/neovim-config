@@ -107,11 +107,18 @@ require('packer').startup(function()
   use('yamatsum/nvim-cursorline')
 
   use({
+    'SmiteshP/nvim-gps',
+    requires = 'nvim-treesitter/nvim-treesitter',
+    config = function()
+      require('nvim-gps').setup({})
+    end,
+  })
+
+  use({
     'nvim-lualine/lualine.nvim',
     requires = { 'kyazdani42/nvim-web-devicons', opt = true },
-    config = function()
-      require('lualine').setup()
-    end,
+    after = 'nvim-gps',
+    config = require('config.lualine'),
   })
 
   use({ 'neovim/nvim-lspconfig', config = require('config.nvim-lspconfig') })
