@@ -1,9 +1,23 @@
 return function()
-  require('lspconfig').tsserver.setup({})
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-  require('lspconfig').eslint.setup({})
+  capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
-  require('lspconfig').solargraph.setup({})
+  require('lspconfig').tsserver.setup({
+    capabilities = capabilities,
+    on_attach = function(client)
+      require('illuminate').on_attach(client)
+    end,
+  })
+
+  -- require('lspconfig').eslint.setup({})
+
+  require('lspconfig').solargraph.setup({
+    capabilities = capabilities,
+    on_attach = function(client)
+      require('illuminate').on_attach(client)
+    end,
+  })
 
   require('lspconfig').sumneko_lua.setup({
     settings = {
@@ -13,5 +27,9 @@ return function()
         },
       },
     },
+    capabilities = capabilities,
+    on_attach = function(client)
+      require('illuminate').on_attach(client)
+    end,
   })
 end

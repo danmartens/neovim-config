@@ -84,6 +84,11 @@ require('packer').startup(function()
     config = require('config.nvim-treesitter'),
   })
 
+  -- use({
+  --   'nvim-treesitter/playground',
+  --   requires = 'nvim-treesitter/nvim-treesitter',
+  -- })
+
   use({
     'windwp/nvim-autopairs',
     config = function()
@@ -104,7 +109,7 @@ require('packer').startup(function()
     end,
   })
 
-  use('yamatsum/nvim-cursorline')
+  -- use('yamatsum/nvim-cursorline')
 
   use({
     'SmiteshP/nvim-gps',
@@ -122,6 +127,18 @@ require('packer').startup(function()
   })
 
   use({ 'neovim/nvim-lspconfig', config = require('config.nvim-lspconfig') })
+
+  use({
+    'RRethy/vim-illuminate',
+    requires = 'nvim-lspconfig',
+  })
+
+  use({
+    'filipdutescu/renamer.nvim',
+    branch = 'master',
+    requires = { { 'nvim-lua/plenary.nvim' } },
+    config = require('config.renamer'),
+  })
 
   use({
     'nvim-telescope/telescope.nvim',
@@ -228,7 +245,14 @@ require('packer').startup(function()
     end,
   })
 
-  use('tpope/vim-commentary')
+  use({ 'rktjmp/lush.nvim' })
+
+  use({
+    'numToStr/Comment.nvim',
+    config = function()
+      require('Comment').setup()
+    end,
+  })
 end)
 
 vim.notify('Configuration sourced!', 'info', { timeout = 250 })
