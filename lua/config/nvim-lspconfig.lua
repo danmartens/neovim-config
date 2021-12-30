@@ -32,4 +32,11 @@ return function()
       require('illuminate').on_attach(client)
     end,
   })
+
+  require('lspconfig').pyright.setup({
+    capabilities = capabilities,
+    on_attach = function(client)
+      require('illuminate').on_attach(client)
+    end,
+  })
 end

@@ -1,3 +1,18 @@
+vim.o.timeoutlen = 1000
+vim.o.ttimeoutlen = 0
+
+vim.o.encoding = 'utf-8'
+
+vim.o.shiftwidth = 2
+vim.o.tabstop = 2
+vim.o.expandtab = true
+
+vim.o.cursorline = true
+
+vim.o.title = true
+vim.o.titlestring = 'VIM: %-25.55F %a%r%m'
+vim.o.titlelen = 70
+
 local keymap = require('keymap')
 
 keymap.n('<c-p>', ':Telescope find_files<cr>')
@@ -19,9 +34,9 @@ keymap.i('<c-s>', '<esc><cmd>w<cr>')
 keymap.n('<c-z>', 'u')
 keymap.i('<c-z>', '<esc>u')
 
--- Reselect text after indent / dedent
-keymap.v('>', '>gv')
-keymap.v('<', '<gv')
+-- -- Reselect text after indent / dedent
+-- keymap.v('>', '>gv')
+-- keymap.v('<', '<gv')
 
 -- Packer
 
@@ -32,20 +47,9 @@ keymap.n('<leader>ps', '<cmd>PackerSync<cr>')
 keymap.n('<leader>ce', '<cmd>e ~/.config/nvim/init.lua<cr>')
 
 vim.cmd([[
-  set encoding=utf-8
-
-  set timeoutlen=1000 ttimeoutlen=0
-
-  set title
-  set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
-
   set mouse=a
 
   set relativenumber number
-
-  set shiftwidth=2
-  set tabstop=2
-  set expandtab
 
   let mapleader=","
 
@@ -67,10 +71,9 @@ vim.cmd([[
     autocmd!
     au BufWritePost init.lua silent! try | source ~/.config/nvim/init.lua | catch | lua vim.notify("Failed to source configuration!", "error") | endtry
   augroup END
-
-  set guifont=FiraCode\ Nerd\ Font:h16
 ]])
 
+---@diagnostic disable: undefined-global
 require('packer').startup(function()
   use('wbthomason/packer.nvim')
 
@@ -83,11 +86,6 @@ require('packer').startup(function()
     end,
     config = require('config.nvim-treesitter'),
   })
-
-  -- use({
-  --   'nvim-treesitter/playground',
-  --   requires = 'nvim-treesitter/nvim-treesitter',
-  -- })
 
   use({
     'windwp/nvim-autopairs',
@@ -102,14 +100,11 @@ require('packer').startup(function()
     'lukas-reineke/indent-blankline.nvim',
     config = function()
       require('indent_blankline').setup({
-        char = '┊',
         show_current_context = true,
         show_current_context_start = true,
       })
     end,
   })
-
-  -- use('yamatsum/nvim-cursorline')
 
   use({
     'SmiteshP/nvim-gps',
@@ -137,6 +132,7 @@ require('packer').startup(function()
     'filipdutescu/renamer.nvim',
     branch = 'master',
     requires = { { 'nvim-lua/plenary.nvim' } },
+    keys = { '<leader>rn' },
     config = require('config.renamer'),
   })
 
@@ -146,7 +142,7 @@ require('packer').startup(function()
     config = require('config.telescope'),
   })
 
-  use('L3MON4D3/LuaSnip')
+  use({ 'L3MON4D3/LuaSnip', config = require('config.luasnip') })
 
   use('hrsh7th/cmp-path')
 
@@ -161,6 +157,14 @@ require('packer').startup(function()
 
   use({
     'norcalli/nvim-colorizer.lua',
+    ft = {
+      'css',
+      'javascript',
+      'typescript',
+      'typescriptreact',
+      'vim',
+      'html',
+    },
     config = function()
       require('colorizer').setup({})
     end,
@@ -207,6 +211,7 @@ require('packer').startup(function()
   use({
     'folke/trouble.nvim',
     requires = 'kyazdani42/nvim-web-devicons',
+    cmd = { 'Trouble', 'TroubleToggle' },
     config = function()
       require('trouble').setup({})
     end,
@@ -215,6 +220,7 @@ require('packer').startup(function()
   use({
     'phaazon/hop.nvim',
     branch = 'v1',
+    keys = { 'mw', 'ml' },
     config = require('config.hop'),
   })
 
@@ -233,9 +239,8 @@ require('packer').startup(function()
 
   use({
     'vim-test/vim-test',
-    config = function()
-      vim.cmd('let test#strategy = "neovim"')
-    end,
+    cmd = { 'TestNearest', 'TestFile' },
+    config = require('config.vim-test'),
   })
 
   use({
@@ -254,5 +259,6 @@ require('packer').startup(function()
     end,
   })
 end)
+---@diagnostic enable: undefined-global
 
 vim.notify('Configuration sourced!', 'info', { timeout = 250 })
